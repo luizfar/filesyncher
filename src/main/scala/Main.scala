@@ -8,33 +8,32 @@ import co.torri.filesyncher.{Log => log}
 import co.torri.filesyncher.LogLevel._
 
 object Sync {
-    
     def main(args: Array[String]): Unit = {
-        
-        var configFile = new File(System.getProperty("user.dir") + File.separator + "configs.properties")
+
+        val configFile = new File(System.getProperty("user.dir") + File.separator + "configs.properties")
         if (!configFile.exists) System.exit(1)
-        
-        var confs = new Properties
-        confs.load(new FileInputStream(configFile))
-        var serverip = confs.get("server.ip").toString.trim
-        var tcpport = confs.get("tcp.port").toString.trim.toInt
-        var serverbasepath = confs.get("server.basepath").toString.trim
-        var clientbasepath = confs.get("client.basepath").toString.trim
-        var defaultflow = confs.get("default.flow").toString.trim
-        var defaultmonitor = confs.get("default.monitor").toString.trim
-        var exclude = confs.get("exclude").toString.trim
-        
+
+        val configurations = new Properties
+        configurations.load(new FileInputStream(configFile))
+        val serverIp = configurations.get("server.ip").toString.trim
+        val tcpPort = configurations.get("tcp.port").toString.trim.toInt
+        val serverBasePath = configurations.get("server.basepath").toString.trim
+        val clientBasePath = configurations.get("client.basepath").toString.trim
+        val defaultFlow = configurations.get("default.flow").toString.trim
+        val defaultMonitor = configurations.get("default.monitor").toString.trim
+        val exclude = configurations.get("exclude").toString.trim
+
         args.toList match {
             case ("client" :: Nil) => {
-                var filter = getFileFilter(exclude)
-                var client = new SyncClient(clientbasepath, serverip, tcpport, decodeSendToServer(defaultflow), filter, defaultmonitor)
+                val filter = getFileFilter(exclude)
+                val client = new SyncClient(clientBasePath, serverIp, tcpPort, decodeSendToServer(defaultFlow), filter, defaultMonitor)
                 var notStarted = true
-                log(INFO, "Server to connect: " + serverip + ":" + tcpport)
+                log(INFO, "Server to connect: " + serverIp + ":" + tcpPort)
                 spawn {
                     Thread.sleep(1000)
                     loop {
                         print("> ")
-                        var line = readLine
+                        val line = readLine
                         line match {
                             case "<=" | "=>" => {
                                 client.sendToServer = decodeSendToServer(line)
@@ -70,23 +69,23 @@ object Sync {
                 client
             }
             case _ => {
-                new SyncServer(serverbasepath, tcpport, defaultmonitor).start
+                new SyncServer(serverBasePath, tcpPort, defaultMonitor).start
                 log.level = DEBUG
                 log(INFO, "Server started")
             }
         }
     }
-    
+
     val decodeSendToServer: PartialFunction[String, Boolean] = {
         case "=>" => true
-        case _    => false
+        case _ => false
     }
-    
+
     val encodeSendToServer: PartialFunction[Boolean, String] = {
-        case true  => "=>"
+        case true => "=>"
         case false => "<="
     }
-    
-    def loop(f: => Unit) = while(true) f
+
+    def loop(f: => Unit) = while (true) f
 }
 
