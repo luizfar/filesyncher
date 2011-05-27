@@ -29,21 +29,21 @@ public class GitFacadeIntegrationTest {
     @Test
     public void shouldFindModifiedFiles() throws Exception {
         modify(committedFile);
-        List<File> files = new com.thoughtworks.syngit.git.GitFacade().findChanges(gitDir);
+        List<File> files = new GitFacade(gitDir).findChanges();
         assertThat(files.get(0).getAbsolutePath(), is(committedFile.getAbsolutePath()));
     }
 
     @Test
     public void shouldFindNewFiles() throws Exception {
         File newFileInRepository = createFileWithContent(workTreeDir, "newFile", "nothing important");
-        List<File> files = new com.thoughtworks.syngit.git.GitFacade().findChanges(gitDir);
+        List<File> files = new GitFacade(gitDir).findChanges();
         assertThat(files.get(0).getAbsolutePath(), is(newFileInRepository.getAbsolutePath()));
     }
 
     @Test
     public void shouldFindDeletedFiles() throws Exception {
         committedFile.delete();
-        List<File> files = new com.thoughtworks.syngit.git.GitFacade().findChanges(gitDir);
+        List<File> files = new GitFacade(gitDir).findChanges();
         assertThat(files.get(0).getAbsolutePath(), is(committedFile.getAbsolutePath()));
     }
 

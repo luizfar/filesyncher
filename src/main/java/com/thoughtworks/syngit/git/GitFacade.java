@@ -12,10 +12,21 @@ import java.util.List;
 
 public class GitFacade {
 
-    public List<File> findChanges(File gitDirectory) throws IOException {
+    private Repository repository;
+
+    private Git git;
+
+    public GitFacade(File gitDirectory) {
         RepositoryBuilder builder = new RepositoryBuilder();
-        Repository repository = builder.setGitDir(gitDirectory).readEnvironment().findGitDir().build();
-        Git git = new Git(repository);
+        try {
+            repository = builder.setGitDir(gitDirectory).readEnvironment().findGitDir().build();
+            git = new Git(repository);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public List<File> findChanges() throws IOException {
         Status status = git.status().call();
 
         List<File> modifiedFiles = new ArrayList<File>();

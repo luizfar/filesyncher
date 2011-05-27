@@ -1,7 +1,5 @@
 package co.torri.filesyncher
 
-import scala.util.matching.Regex
-import scala.io._
 import scala.tools.nsc.io.File
 import java.io.{File => JFile, FileFilter}
 import java.util.zip.{ZipOutputStream, ZipInputStream, ZipEntry}
@@ -41,22 +39,22 @@ object FileUtils {
         log(FILEOP, "delete: " + f.getAbsolutePath)
     }
     
-    def zip(basepath: String, files: List[JFile]): Array[Byte] = files.size match {
+    def zip(basePath: String, files: List[JFile]): Array[Byte] = files.size match {
         case 0 => Array[Byte]()
         case _ => {
-            var buf = Array.ofDim[Byte](1024)
-            var byteout = new ByteArrayOutputStream
-            var out = new ZipOutputStream(byteout)
+            val buf = Array.ofDim[Byte](1024)
+            val byteOut = new ByteArrayOutputStream
+            val out = new ZipOutputStream(byteOut)
 	 	    files.foreach { f =>
                 log(FILEOP, "zip: " + f.getAbsolutePath)
-    	 	    var in = new FileInputStream(f)
-    	 	    out.putNextEntry(new ZipEntry(f.toString.replace(basepath, "")))
+    	 	    val in = new FileInputStream(f)
+    	 	    out.putNextEntry(new ZipEntry(f.toString.replace(basePath, "")))
     	 	    streamcopy(in, out, buf)
     	 	    out.closeEntry()
 	 	        in.close()
             }
             out.close
-            byteout.toByteArray
+            byteOut.toByteArray
         }
     }
     
@@ -98,7 +96,7 @@ object FileUtils {
 }
 
 
-class FilesWatcher(path: String, filter: FileFilter, poltime: Long = 5000) {
+class FilesWatcher(path: String, poltime: Long = 5000) {
     
     var filestimestamp = getLastFileList
     
@@ -114,7 +112,7 @@ class FilesWatcher(path: String, filter: FileFilter, poltime: Long = 5000) {
         filestimestamp.filter(p => p._2 != newFiles(p._1)).isEmpty
     }
     
-    private def getLastFileList = recursiveListFiles(path, filter).map(f => (f, f.lastModified)).toMap
+    private def getLastFileList = recursiveListFiles(path).map(f => (f, f.lastModified)).toMap
 }
 
 class ExcludeFileFilter(exclude: String) extends FileFilter {
