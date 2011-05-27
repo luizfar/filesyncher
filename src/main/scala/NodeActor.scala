@@ -4,15 +4,13 @@ import scala.actors._
 import scala.actors.Actor._
 import scala.actors.remote._
 import scala.actors.remote.RemoteActor._
-import java.io.{File, FileFilter}
+import java.io.File
 import co.torri.filesyncher.FileUtils._
 import co.torri.filesyncher.BaseActs._
 import co.torri.filesyncher.{Log => log}
 import co.torri.filesyncher.LogLevel._
 import com.thoughtworks.syngit.git.GitFacade
 import java.util.{List => JList}
-import scala.collection.JavaConversions._
-
 abstract class BaseActs(basePath: String) extends Actor {
     protected def sayHello(server: OutputChannel[Any]) = {
         log(INFO, "Greeting server")
@@ -29,9 +27,9 @@ abstract class BaseActs(basePath: String) extends Actor {
         }
     }
 
-    protected def upload(files: List[File]) = {
+    protected def uploadTo(server: OutputChannel[Any], files: List[File]) = {
         log(INFO, "Uploading")
-        sender ! zip(basePath, files)
+        server ! zip(basePath, files)
     }
 
     protected def download(server: OutputChannel[Any]) {
@@ -88,7 +86,7 @@ class SyncClient private(basePath: String, server: AbstractActor, waitFor: () =>
                 for (val i <- 0 to (changedFiles.size - 1)) {
                     files(i) = changedFiles.get(i)
                 }
-                upload(List.fromArray(files))
+                uploadTo(server, List.fromArray(files))
             }
             waitFor()
         }
