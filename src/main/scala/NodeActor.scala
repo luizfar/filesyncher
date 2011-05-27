@@ -79,7 +79,7 @@ class SyncClient private(basePath: String, server: AbstractActor, waitFor: () =>
         this (basePath, select(Node(serverIp, port), 'filesync), parseMonitor(basePath, monitor))
 
     def act {
-        val gitFacade = new GitFacade(new File(basePath))
+        val gitFacade = new GitFacade(new File(basePath + File.separator + ".git"))
         loop {
             sayHello(server)
             val changedFiles: JList[File] = gitFacade.findChanges
