@@ -8,7 +8,7 @@ import java.io.FileWriter;
 import java.util.Date;
 import java.util.List;
 
-import static com.thoughtworks.syngit.tests.TestUtils.*;
+import static com.thoughtworks.syngit.tests.Utils.*;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 

@@ -8,7 +8,10 @@ object Sync {
     def main(args: Array[String]): Unit = {
 
         val configFile = new File(System.getProperty("user.dir") + File.separator + "configs.properties")
-        if (!configFile.exists) System.exit(1)
+        if (!configFile.exists) {
+            error("Config file not found")
+            System.exit(1)
+        }
 
         val configurations = new Properties
         configurations.load(new FileInputStream(configFile))

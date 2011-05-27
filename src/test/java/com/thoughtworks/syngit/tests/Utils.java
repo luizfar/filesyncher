@@ -2,7 +2,7 @@ package com.thoughtworks.syngit.tests;
 
 import java.io.*;
 
-public class TestUtils {
+public class Utils {
 
     public static File createFileWithContent(File directory, String name, String content) throws Exception {
         File file = new File(directory, name);
