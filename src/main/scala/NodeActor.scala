@@ -85,7 +85,7 @@ class SyncClient private(basePath: String, server: AbstractActor, waitFor: () =>
             val changedFiles: JList[File] = gitFacade.findChanges
             if (!changedFiles.isEmpty) {
                 val files = new Array[File](changedFiles.size)
-                for (val i <- 0 to changedFiles.size) {
+                for (val i <- 0 to (changedFiles.size - 1)) {
                     files(i) = changedFiles.get(i)
                 }
                 upload(List.fromArray(files))
