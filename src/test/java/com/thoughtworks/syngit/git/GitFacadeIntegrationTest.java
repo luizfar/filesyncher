@@ -40,13 +40,6 @@ public class GitFacadeIntegrationTest {
         assertThat(files.get(0).getAbsolutePath(), is(newFileInRepository.getAbsolutePath()));
     }
 
-    @Test
-    public void shouldFindDeletedFiles() throws Exception {
-        committedFile.delete();
-        List<File> files = new GitFacade(gitDir).findChanges();
-        assertThat(files.get(0).getAbsolutePath(), is(committedFile.getAbsolutePath()));
-    }
-
     private void modify(File file) throws Exception {
         FileWriter writer = new FileWriter(file);
         writer.append("\nModifying file at ").append(String.valueOf(new Date()));

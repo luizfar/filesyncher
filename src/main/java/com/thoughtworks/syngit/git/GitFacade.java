@@ -33,6 +33,9 @@ public class GitFacade {
         for (String modifiedFileName : status.getModified()) {
             modifiedFiles.add(new File(repository.getWorkTree(), modifiedFileName));
         }
+        for (String untrackedFileName : status.getUntracked()) {
+            modifiedFiles.add(new File(repository.getWorkTree(), untrackedFileName));
+        }
 
         return modifiedFiles;
     }
