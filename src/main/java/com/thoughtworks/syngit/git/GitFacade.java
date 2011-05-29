@@ -26,17 +26,21 @@ public class GitFacade {
         }
     }
 
-    public List<File> findChanges() throws IOException {
-        Status status = git.status().call();
+    public List<File> findChanges() {
+        try {
+            Status status = git.status().call();
 
-        List<File> modifiedFiles = new ArrayList<File>();
-        for (String modifiedFileName : status.getModified()) {
-            modifiedFiles.add(new File(repository.getWorkTree(), modifiedFileName));
-        }
-        for (String untrackedFileName : status.getUntracked()) {
-            modifiedFiles.add(new File(repository.getWorkTree(), untrackedFileName));
-        }
+            List<File> modifiedFiles = new ArrayList<File>();
+            for (String modifiedFileName : status.getModified()) {
+                modifiedFiles.add(new File(repository.getWorkTree(), modifiedFileName));
+            }
+            for (String untrackedFileName : status.getUntracked()) {
+                modifiedFiles.add(new File(repository.getWorkTree(), untrackedFileName));
+            }
 
-        return modifiedFiles;
+            return modifiedFiles;
+        } catch (IOException e) {
+            throw new GitAccessException(e);
+        }
     }
 }

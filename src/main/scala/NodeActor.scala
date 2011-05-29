@@ -10,6 +10,7 @@ import co.torri.filesyncher.{Log => log}
 import co.torri.filesyncher.LogLevel._
 import com.thoughtworks.syngit.git.GitFacade
 import java.util.{List => JList}
+import com.thoughtworks.syngit.ClientRepository
 
 object MonitorParser {
     private val TimeMonitorRE = """(\d+)\s*(\w)""".r
@@ -78,10 +79,10 @@ class SyncClient private(basePath: String, server: AbstractActor, waitFor: () =>
     }
 
     def act() {
-        val gitFacade = new GitFacade(new File(basePath + File.separator + ".git"))
+        val repository = new ClientRepository(new File(basePath + File.separator + ".git"))
         sayHello()
         loop {
-            val changedFiles: JList[File] = gitFacade.findChanges
+            val changedFiles: JList[File] = repository.findNewlyChangedFiles
             if (!changedFiles.isEmpty) {
                 val files = new Array[File](changedFiles.size)
                 for (val i <- 0 to (changedFiles.size - 1)) {
