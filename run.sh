@@ -1,0 +1,1 @@
+java -cp filesyncher-1.0.jar:$HOME/.m2/repository/org/scala-lang/scala-compiler/2.8.0/scala-compiler-2.8.0.jar:$HOME/.m2/repository/org/scala-lang/scala-library/2.8.0/scala-library-2.8.0.jar:$HOME/.m2/repository/org/eclipse/jgit/org.eclipse.jgit/0.12.1/org.eclipse.jgit-0.12.1.jar Sync $1 $2
