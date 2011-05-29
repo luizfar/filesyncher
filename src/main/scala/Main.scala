@@ -27,7 +27,7 @@ object Sync {
                 log(INFO, "Server to connect: " + serverIp + ":" + tcpPort)
             }
             case _ => {
-                new SyncServer(serverBasePath, tcpPort, defaultMonitor).start
+                new SyncServer(serverBasePath, tcpPort).start
                 log(INFO, "Server started")
             }
         }
