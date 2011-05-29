@@ -1,4 +1,6 @@
 .idea
+*.ipr
+*.iws
 *.iml
 lib_managed/
 project/build/target/
