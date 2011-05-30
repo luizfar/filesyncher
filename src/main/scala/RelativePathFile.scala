@@ -9,7 +9,7 @@ class RelativePathFile(val pathPrefix: String, val relativePath: String, overrid
     
     def this(f: File, prefix: String) = this(fixPathPrefix(prefix), 
                                                 f.getAbsolutePath.replace(fixPathPrefix(prefix), ""),
-                                                filehash(f),
+                                                fileHash(f),
                                                 f.lastModified)
     
     override def equals(o: Any) = o.isInstanceOf[RelativePathFile] &&
@@ -32,7 +32,7 @@ object RelativePathFile {
     
     def apply(str: String, basepath: String = "") = str.split("\n").filterNot(_.trim.isEmpty).map { l =>
         l match {
-            case RelativePathFileRE(relativePath, hashCode, timestamp) => new RelativePathFile(basepath, fixpath(relativePath), hashCode.toInt, timestamp.toLong)
+            case RelativePathFileRE(relativePath, hashCode, timestamp) => new RelativePathFile(basepath, fixPath(relativePath), hashCode.toInt, timestamp.toLong)
         }
     }.toList
     

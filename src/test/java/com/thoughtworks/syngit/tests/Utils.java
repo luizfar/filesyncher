@@ -1,6 +1,9 @@
 package com.thoughtworks.syngit.tests;
 
-import java.io.*;
+import com.thoughtworks.syngit.util.CommandExecutor;
+
+import java.io.File;
+import java.io.FileWriter;
 
 public class Utils {
 
@@ -28,20 +31,6 @@ public class Utils {
     }
 
     public static void execCommands(File dir, String... commands) throws Exception {
-        File wd = new File("/bin");
-        Process process = Runtime.getRuntime().exec("/bin/bash", null, wd);
-        BufferedReader in = new BufferedReader(new InputStreamReader(process.getInputStream()));
-        PrintWriter out = new PrintWriter(new BufferedWriter(new OutputStreamWriter(process.getOutputStream())), true);
-
-        out.println("cd " + dir.getAbsolutePath());
-        for (String command : commands) {
-            out.println(command);
-        }
-        out.println("exit");
-
-        process.waitFor();
-        in.close();
-        out.close();
-        process.destroy();
+        new CommandExecutor().executeIn(dir, commands);
     }
 }

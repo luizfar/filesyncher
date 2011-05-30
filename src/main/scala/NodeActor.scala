@@ -8,19 +8,16 @@ import java.io.File
 import co.torri.filesyncher.FileUtils._
 import co.torri.filesyncher.{Log => log}
 import co.torri.filesyncher.LogLevel._
-import com.thoughtworks.syngit.git.GitFacade
 import java.util.{List => JList}
-import com.thoughtworks.syngit.ClientRepository
+import com.thoughtworks.syngit.{Diff, ClientRepository}
 
 object MonitorParser {
     private val TimeMonitorRE = """(\d+)\s*(\w)""".r
-    private val FileChangeMonitorRE = """filechange\s*\((\d+)\)""".r
 
     def parseMonitor(basePath: String, monitor: String): () => Unit = monitor match {
         case TimeMonitorRE(time, "s") => {() => Thread.sleep(time.toInt * 1000)}
         case TimeMonitorRE(time, "m") => {() => Thread.sleep(time.toInt * 1000 * 60)}
         case TimeMonitorRE(time, "h") => {() => Thread.sleep(time.toInt * 1000 * 60 * 60)}
-        case FileChangeMonitorRE(pollTime) => val watcher = new FilesWatcher(basePath, pollTime.toInt); {() => watcher.waitchange}
     }
 }
 
@@ -73,22 +70,18 @@ class SyncClient private(basePath: String, server: AbstractActor, waitFor: () =>
         }
     }
 
-    private def upload(files: List[File]) {
-        log(INFO, "Uploading")
-        server ! zip(basePath, files)
+    private def upload(diff: Diff) {
+        log(INFO, "Uploading...")
+        server ! zip(basePath, diff)
     }
 
     def act() {
         val repository = new ClientRepository(new File(basePath + File.separator + ".git"))
         sayHello()
         loop {
-            val changedFiles: JList[File] = repository.findNewlyChangedFiles
-            if (!changedFiles.isEmpty) {
-                val files = new Array[File](changedFiles.size)
-                for (val i <- 0 to (changedFiles.size - 1)) {
-                    files(i) = changedFiles.get(i)
-                }
-                upload(files.toList)
+            val diff: Diff = repository.getDiff
+            if (diff.hasChanges) {
+                upload(diff)
             }
             waitFor()
         }
