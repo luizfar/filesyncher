@@ -3,14 +3,12 @@ package co.torri.filesyncher
 import scala.tools.nsc.io.File
 import java.util.zip.{ZipOutputStream, ZipInputStream, ZipEntry}
 import java.security.MessageDigest
-import co.torri.filesyncher.FileUtils._
 import co.torri.filesyncher.{Log => log}
 import co.torri.filesyncher.LogLevel._
 import scala.annotation.tailrec
 import com.thoughtworks.syngit.Diff
 import com.thoughtworks.syngit.git.GitFacade
-import java.io.{ByteArrayOutputStream, File => JFile, FileFilter, InputStream, OutputStream, FileInputStream, FileOutputStream, ByteArrayInputStream}
-
+import java.io.{ByteArrayOutputStream, File => JFile, InputStream, OutputStream, FileInputStream, FileOutputStream, ByteArrayInputStream}
 
 object FileStatus extends Enumeration {
    val DELETED = Value('D')
@@ -47,7 +45,7 @@ object FileUtils {
         byteOut.toByteArray
     }
     
-    def unzip(dest: JFile, zip: Array[Byte]) {
+    def applyZippedDiff(dest: JFile, zip: Array[Byte]) {
         require(dest.isDirectory)
         val zipInputStream = new ZipInputStream(new ByteArrayInputStream(zip))
 

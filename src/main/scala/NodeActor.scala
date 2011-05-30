@@ -8,7 +8,6 @@ import java.io.File
 import co.torri.filesyncher.FileUtils._
 import co.torri.filesyncher.{Log => log}
 import co.torri.filesyncher.LogLevel._
-import java.util.{List => JList}
 import com.thoughtworks.syngit.{Diff, ClientRepository}
 
 object MonitorParser {
@@ -23,23 +22,15 @@ object MonitorParser {
 
 class SyncServer(basePath: String, port: Int) extends Actor {
 
-    private def waitClient: OutputChannel[Any] = {
-        log(INFO, "Waiting client...")
+    private def waitForMessage() {
         receive {
             case ('ping) => {
                 log(INFO, "Client connected.")
                 sender ! ('pong)
-                return sender
             }
-        }
-    }
-
-    private def download(server: OutputChannel[Any]) {
-        log(INFO, "Downloading")
-        receive {
             case zipped: Array[Byte] => {
-                log(DEBUG, "Receiving new and modified files")
-                unzip(basePath, zipped)
+                log(INFO, "Received changes... applying")
+                applyZippedDiff(basePath, zipped)
             }
             case a: Any => log(SEVERE, "Unexpected protocol error. Received " + a)
         }
@@ -48,14 +39,14 @@ class SyncServer(basePath: String, port: Int) extends Actor {
     def act() {
         alive(port)
         register('filesync, self)
-        val sender = waitClient
+        log(INFO, "Waiting client...")
         loop {
-            download(sender)
+            waitForMessage()
         }
     }
 }
 
-class SyncClient private(basePath: String, server: AbstractActor, waitFor: () => Unit) extends Actor {
+class SyncClient private(basePath: String, server: AbstractActor, sleep: () => Unit) extends Actor {
 
     def this(basePath: String, serverIp: String, port: Int, monitor: String) =
         this (basePath, select(Node(serverIp, port), 'filesync), MonitorParser.parseMonitor(basePath, monitor))
@@ -83,7 +74,7 @@ class SyncClient private(basePath: String, server: AbstractActor, waitFor: () =>
             if (diff.hasChanges) {
                 upload(diff)
             }
-            waitFor()
+            sleep()
         }
     }
 }
