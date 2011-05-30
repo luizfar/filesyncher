@@ -32,4 +32,20 @@ public class Diff {
     public boolean hasChanges() {
         return !getCachedPatch().trim().isEmpty() || !getPatch().trim().isEmpty() || !getNewFiles().isEmpty();
     }
+
+    @Override
+    public int hashCode() {
+        return cachedPatch.hashCode() + patch.hashCode() + newFiles.hashCode() * 31;
+    }
+
+    @Override
+    public boolean equals(Object other) {
+        if (!(other instanceof Diff)) {
+            return false;
+        }
+        Diff otherDiff = (Diff) other;
+        return otherDiff.cachedPatch.equals(cachedPatch) &&
+                otherDiff.patch.equals(patch) &&
+                otherDiff.newFiles.equals(newFiles);
+    }
 }
