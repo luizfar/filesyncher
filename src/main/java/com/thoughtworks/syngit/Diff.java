@@ -46,6 +46,20 @@ public class Diff {
         Diff otherDiff = (Diff) other;
         return otherDiff.cachedPatch.equals(cachedPatch) &&
                 otherDiff.patch.equals(patch) &&
-                otherDiff.newFiles.equals(newFiles);
+                compareFilesByLastModification(otherDiff.newFiles, newFiles);
+    }
+
+    private boolean compareFilesByLastModification(List<File> filesList, List<File> anotherFilesList) {
+        if (filesList.size() != anotherFilesList.size()) {
+            return false;
+        }
+        for (int i = 0; i < filesList.size(); i++) {
+            File aFile = filesList.get(i);
+            File anotherFile = anotherFilesList.get(i);
+            if (!aFile.equals(aFile) || aFile.lastModified() != anotherFile.lastModified()) {
+                return false;
+            }
+        }
+        return true;
     }
 }

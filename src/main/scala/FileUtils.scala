@@ -33,12 +33,14 @@ object FileUtils {
 
         for (val i <- 0 to (diff.getNewFiles.size - 1)) {
             val file = diff.getNewFiles.get(i)
-            log(FILEOP, "zip: " + file.getAbsolutePath)
-            val in = new FileInputStream(file)
-            out.putNextEntry(new ZipEntry("_untracked_" + file.toString.replace(basePath, "")))
-            streamCopy(in, out, buf)
-            out.closeEntry()
-            in.close()
+            if (file.exists) {
+                log(FILEOP, "zip: " + file.getAbsolutePath)
+                val in = new FileInputStream(file)
+                out.putNextEntry(new ZipEntry("_untracked_" + file.toString.replace(basePath, "")))
+                streamCopy(in, out, buf)
+                out.closeEntry()
+                in.close()
+            }
         }
 
         out.close()
